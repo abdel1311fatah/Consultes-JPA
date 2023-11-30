@@ -41,7 +41,6 @@ public class Main {
             mesaJose.setBlancos(10);
             mesaJose.setNulos(10);
             mesaJose.setColegioIdcolegio(mesaJose.getColegioIdcolegio());
-            JoseManuel.setMesa(mesaJose);
             JoseManuel.setCargo("PR");
 
             entityManager.persist(JoseManuel);
@@ -49,10 +48,23 @@ public class Main {
             entityManager.close();
             emf.close();
 
+        } else if (option == 2) {
+
+
+
+        } else if (option == 3) {
+
+
+
+        } else if (option == 4) {
+
+
+
         } else if (option == 5) {
 
             EntityManagerFactory factory = Persistence.createEntityManagerFactory("default");
             EntityManager em = factory.createEntityManager();
+            em.getTransaction().begin();
             Query query = em.createNativeQuery("SELECT * FROM componente", Componente.class);
             List<Componente> componentes = query.getResultList();
             for (Componente c : componentes) {

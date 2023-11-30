@@ -105,6 +105,19 @@ public class Componente implements Serializable {
         return result;
     }
 
+    @Override
+    public String toString() {
+        return "Componente{" +
+                "dni='" + dni + '\'' +
+                ", nombre='" + nombre + '\'' +
+                ", fNacimiento=" + fNacimiento +
+                ", cargo='" + cargo + '\'' +
+                ", mesaLetra='" + mesaLetra + '\'' +
+                ", mesaColegioIdcolegio=" + mesaColegioIdcolegio +
+                ", mesa=" + mesa +
+                '}';
+    }
+
     public Mesa getMesa() {
         return mesa;
     }
