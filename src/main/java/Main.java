@@ -11,6 +11,7 @@ import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.Scanner;
 
 // , insertable = false, updatable = false lo que s ha de ficar al joinColumns, mirar q ue no hi haguin 2 en una sola linia
@@ -237,7 +238,7 @@ public class Main {
             Query query = em.createNativeQuery("SELECT c.direccion, COUNT(m.letra) as taules " +
                     "FROM colegio c " +
                     "LEFT JOIN mesa m ON c.idcolegio = m.colegio_idcolegio " +
-                    "GROUP BY c.direccion " +
+                    "GROUP BY c.direccion " + // primer s agrupen per adreça i despres que surtin ordenats per adreça
                     "ORDER BY c.direccion");
 
             List<Object[]> results = query.getResultList();
@@ -247,6 +248,49 @@ public class Main {
                 Long numTaules = (Long) result[1];
 
                 System.out.println("Col·legi a " + direccion + " amb " + numTaules + " taules.");
+            }
+
+            em.getTransaction().commit();
+            em.close();
+            factory.close();
+
+        } else if (option == 12) {
+
+            EntityManagerFactory factory = Persistence.createEntityManagerFactory("default");
+            EntityManager em = factory.createEntityManager();
+            em.getTransaction().begin();
+            Query query = em.createNativeQuery("SELECT r.partido_siglas, p.lider, SUM(r.votos) as totalVotos " + // es guarde el guanyador es guarde a la posicio 0 de la llista
+                    // i les parts del guanyador es guarde al Object[0] i [1]
+                    "FROM recuento r " +
+                    "JOIN partido p ON r.partido_siglas = p.siglas " +
+                    "GROUP BY r.partido_siglas " +
+                    "ORDER BY totalVotos DESC " +
+                    "LIMIT 1");
+
+            List<Object[]> guanyador = query.getResultList();
+            Object[] resultat = guanyador.get(0);
+            String partido = (String) resultat[0];
+            String lider = (String) resultat[1];
+
+            System.out.println("El partit guanyador es: " + partido + " i te de lider a " + lider + " es el lider");
+
+        } else if (option == 13) {
+
+            EntityManagerFactory factory = Persistence.createEntityManagerFactory("default");
+            EntityManager em = factory.createEntityManager();
+            em.getTransaction().begin();
+            Query query = em.createNativeQuery("SELECT * FROM componente", Componente.class);
+            List<Componente> componentes = query.getResultList();
+
+            Random random = new Random();
+            int randomNum = random.nextInt(componentes.size());
+
+            for (int i = 1; i <= componentes.size(); i++) {
+
+                if (i == randomNum){
+                    System.out.println(componentes.get(i).toString());
+                }
+
             }
 
             em.getTransaction().commit();
