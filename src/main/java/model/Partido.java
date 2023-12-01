@@ -2,11 +2,10 @@ package model;
 
 import jakarta.persistence.*;
 
-import java.io.Serializable;
 import java.util.Collection;
 
 @Entity
-public class Partido implements Serializable {
+public class Partido {
 
     @Id
     @Column(name = "siglas")

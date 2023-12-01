@@ -2,11 +2,9 @@ package model;
 
 import jakarta.persistence.*;
 
-import java.io.Serializable;
-
 @Entity
 @IdClass(RecuentoPK.class)
-public class Recuento implements Serializable {
+public class Recuento {
 
     @Id
     @Column(name = "mesa_colegio_idcolegio")
@@ -23,10 +21,10 @@ public class Recuento implements Serializable {
     @Column(name = "votos")
     private Integer votos;
     @ManyToOne
-    @JoinColumns({@JoinColumn(name = "mesa_letra", referencedColumnName = "letra", nullable = false), @JoinColumn(name = "mesa_colegio_idcolegio", referencedColumnName = "colegio_idcolegio", nullable = false)})
+    @JoinColumns({@JoinColumn(name = "mesa_letra", referencedColumnName = "letra", nullable = false, insertable = false, updatable = false), @JoinColumn(name = "mesa_colegio_idcolegio", referencedColumnName = "colegio_idcolegio", nullable = false, insertable = false, updatable = false)})
     private Mesa mesa;
     @ManyToOne
-    @JoinColumn(name = "partido_siglas", referencedColumnName = "siglas", nullable = false)
+    @JoinColumn(name = "partido_siglas", referencedColumnName = "siglas", nullable = false, insertable = false, updatable = false)
     private Partido partidoByPartidoSiglas;
 
     public int getMesaColegioIdcolegio() {

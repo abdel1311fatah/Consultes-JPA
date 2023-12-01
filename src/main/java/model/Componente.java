@@ -2,11 +2,11 @@ package model;
 
 import jakarta.persistence.*;
 
-import java.io.Serializable;
 import java.sql.Date;
 
 @Entity
-public class Componente implements Serializable {
+public class Componente {
+
     @Id
     @Column(name = "dni")
     private String dni;
@@ -26,7 +26,7 @@ public class Componente implements Serializable {
     @Column(name = "mesa_colegio_idcolegio")
     private int mesaColegioIdcolegio;
     @ManyToOne
-    @JoinColumns({@JoinColumn(name = "mesa_letra", referencedColumnName = "letra", nullable = false), @JoinColumn(name = "mesa_colegio_idcolegio", referencedColumnName = "colegio_idcolegio", nullable = false)})
+    @JoinColumns({@JoinColumn(name = "mesa_letra", referencedColumnName = "letra", nullable = false, insertable = false, updatable = false), @JoinColumn(name = "mesa_colegio_idcolegio", referencedColumnName = "colegio_idcolegio", nullable = false, insertable = false, updatable = false)})
     private Mesa mesa;
 
     public String getDni() {
@@ -125,4 +125,5 @@ public class Componente implements Serializable {
     public void setMesa(Mesa mesa) {
         this.mesa = mesa;
     }
+
 }

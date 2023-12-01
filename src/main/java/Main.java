@@ -5,8 +5,15 @@ import jakarta.persistence.Query;
 import model.Componente;
 import model.Mesa;
 
+import java.sql.Date;
+import java.sql.Time;
+import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+
+// , insertable = false, updatable = false lo que s ha de ficar al joinColumns, mirar q ue no hi haguin 2 en una sola linia
 
 public class Main {
     public static void main(String[] args) {
@@ -29,36 +36,81 @@ public class Main {
         int option = scan.nextInt();
 
         if (option == 1) {
-            EntityManagerFactory emf = Persistence.createEntityManagerFactory("default");
-            EntityManager entityManager = emf.createEntityManager();
-            entityManager.getTransaction().begin();
-            Componente JoseManuel = new Componente();
-            JoseManuel.setDni(" 31222337");
-            JoseManuel.setNombre("José Manuel Castilla Gil");
-            Mesa mesaJose = new Mesa();
-            mesaJose.setColegioIdcolegio(1);
-            mesaJose.setLetra("a");
-            mesaJose.setBlancos(10);
-            mesaJose.setNulos(10);
-            mesaJose.setColegioIdcolegio(mesaJose.getColegioIdcolegio());
-            JoseManuel.setCargo("PR");
+            EntityManagerFactory factory = Persistence.createEntityManagerFactory("default");
+            EntityManager em = factory.createEntityManager();
 
-            entityManager.persist(JoseManuel);
-            entityManager.getTransaction().commit();
-            entityManager.close();
-            emf.close();
+            Query query = em.createQuery("SELECT c FROM Componente c");
+            List<Componente> list = query.getResultList();
+            String dni = "12345670";
+            String nombre = "José Manuel Castilla Gil";
+            String f_nacimiento = "2012-07-13";
+            String cargo = "PR";
+            String mesa_letra = "A";
+            int mesa_colegio_idcolegio = 1;
+
+            boolean componenteExistente = false;
+
+            for (Componente nuevoComponente : list) {
+                if (dni.equals(nuevoComponente.getDni()) && nombre.equals(nuevoComponente.getNombre()) && f_nacimiento.equals(nuevoComponente.getfNacimiento().toString()) && !cargo.equals("PR") && !cargo.equals("V1") && !cargo.equals("V2") && !mesa_letra.equals(nuevoComponente.getMesaLetra()) && mesa_colegio_idcolegio != nuevoComponente.getMesaColegioIdcolegio()) {
+                    componenteExistente = true;
+                    break;
+                }
+            }
+
+            if (componenteExistente) {
+                System.out.println("El componente ya existe");
+            } else {
+                em.getTransaction().begin();
+                Componente nuevoComponente = new Componente();
+                nuevoComponente.setDni(dni);
+                nuevoComponente.setNombre(nombre);
+                nuevoComponente.setfNacimiento(Date.valueOf(f_nacimiento));
+                nuevoComponente.setCargo(cargo);
+                nuevoComponente.setMesaLetra(mesa_letra);
+                nuevoComponente.setMesaColegioIdcolegio(mesa_colegio_idcolegio);
+
+                em.persist(nuevoComponente);
+                em.getTransaction().commit();
+                System.out.println("El componente se ha introducido correctamente");
+            }
 
         } else if (option == 2) {
 
-
+            System.out.println("No esta fet");
 
         } else if (option == 3) {
 
+            EntityManagerFactory factory = Persistence.createEntityManagerFactory("default");
+            EntityManager em = factory.createEntityManager();
+            em.getTransaction().begin();
+            Query query = em.createNativeQuery("SELECT * FROM componente", Componente.class);
+            List<Componente> componentes = query.getResultList();
 
+            for (Componente c : componentes) {
+                if (c.getMesaColegioIdcolegio() == 0 && c.getMesaLetra().isEmpty()) {
+                    em.remove(c);
+                }
+            }
+
+            em.getTransaction().commit();
+            em.close();
+            factory.close();
 
         } else if (option == 4) {
 
+            EntityManagerFactory factory = Persistence.createEntityManagerFactory("default");
+            EntityManager em = factory.createEntityManager();
+            em.getTransaction().begin();
+            Query query = em.createQuery("SELECT c FROM Componente c order by c.mesaColegioIdcolegio, c.mesaLetra, c.cargo", Componente.class);
+            List<Componente> componentes = query.getResultList();
 
+            for (Componente c : componentes) {
+                System.out.println(c.getNombre() + " te el carrec " + c.getCargo());
+            }
+
+            em.getTransaction().commit();
+            em.close();
+            factory.close();
 
         } else if (option == 5) {
 
@@ -67,12 +119,140 @@ public class Main {
             em.getTransaction().begin();
             Query query = em.createNativeQuery("SELECT * FROM componente", Componente.class);
             List<Componente> componentes = query.getResultList();
+            LocalDate currentDate = LocalDate.now(); // agafem la data de ara
             for (Componente c : componentes) {
-                System.out.println(c.toString());
+                Date birthDate = c.getfNacimiento();
+                LocalDate birthLocalDate = birthDate.toLocalDate();
+
+                int edat = currentDate.getYear() - birthLocalDate.getYear();
+
+                if (edat < 18) {
+                    System.out.println(c.getNombre() + " te " + edat + " anys");
+                }
             }
             em.getTransaction().commit();
             em.close();
             factory.close();
+
+        } else if (option == 6) {
+
+            EntityManagerFactory factory = Persistence.createEntityManagerFactory("default");
+            EntityManager em = factory.createEntityManager();
+            em.getTransaction().begin();
+            Query query = em.createNativeQuery("SELECT * FROM componente", Componente.class);
+            List<Componente> componentes = query.getResultList();
+
+            for (Componente c : componentes) {
+                Date birthDate = c.getfNacimiento();
+                if (birthDate.getYear() != 1980) {
+                    System.out.println(c.getNombre() + " es de l' any: " + birthDate.getYear());
+                }
+            }
+
+            em.getTransaction().commit();
+            em.close();
+            factory.close();
+
+        } else if (option == 7) {
+
+            EntityManagerFactory factory = Persistence.createEntityManagerFactory("default");
+            EntityManager em = factory.createEntityManager();
+            em.getTransaction().begin();
+            Query query = em.createNativeQuery("SELECT * FROM componente", Componente.class);
+            List<Componente> componentes = query.getResultList();
+            List<Componente> presidents = new ArrayList<>();
+            int contador = 0;
+            for (Componente c : componentes) {
+
+                if (c.getCargo().equalsIgnoreCase("pr")) {
+                    if (contador != 3) {
+                        contador++;
+                        presidents.add(c);
+                    }else{
+                        break;
+                    }
+                }
+            }
+
+            for (Componente c : presidents) {
+                System.out.println(c.getDni() + " tiene de nombre: " + c.getNombre());
+            }
+
+            em.getTransaction().commit();
+            em.close();
+            factory.close();
+
+        } else if (option == 8) {
+
+            EntityManagerFactory factory = Persistence.createEntityManagerFactory("default");
+            EntityManager em = factory.createEntityManager();
+            em.getTransaction().begin();
+            Query query = em.createQuery("SELECT c FROM Componente c order by c.dni", Componente.class);
+            List<Componente> componentes = query.getResultList();
+
+            for (Componente c : componentes) {
+                if (c.getfNacimiento().getMonth() == 6 || c.getfNacimiento().getMonth() == 7 || c.getfNacimiento().getMonth() == 8){
+                    System.out.println(c.getDni() + " i te el nom: " + c.getNombre());
+                }
+            }
+
+            em.getTransaction().commit();
+            em.close();
+            factory.close();
+
+        } else if (option == 9) {
+
+            EntityManagerFactory factory = Persistence.createEntityManagerFactory("default");
+            EntityManager em = factory.createEntityManager();
+            em.getTransaction().begin();
+            Query query = em.createNativeQuery("SELECT * FROM componente", Componente.class);
+            List<Componente> componentes = query.getResultList();
+            List<Componente> presidents = new ArrayList<>();
+            int contador = 0;
+            for (Componente c : componentes) {
+
+                if (c.getCargo().equalsIgnoreCase("pr")) {
+
+                    if (c.getNombre().equalsIgnoreCase("Pascual Collado")){
+                        Query totalVotosQuery = em.createNativeQuery("SELECT SUM(votos) FROM recuento WHERE partido_siglas =  "); // massa porro
+                    }
+
+                }
+            }
+
+            em.getTransaction().commit();
+            em.close();
+            factory.close();
+
+        } else if (option == 10) {
+
+            System.out.println("No l he fet");
+            
+        } else if (option == 11) {
+
+            EntityManagerFactory factory = Persistence.createEntityManagerFactory("default");
+            EntityManager em = factory.createEntityManager();
+            em.getTransaction().begin();
+
+            Query query = em.createNativeQuery("SELECT c.direccion, COUNT(m.letra) as taules " +
+                    "FROM colegio c " +
+                    "LEFT JOIN mesa m ON c.idcolegio = m.colegio_idcolegio " +
+                    "GROUP BY c.direccion " +
+                    "ORDER BY c.direccion");
+
+            List<Object[]> results = query.getResultList();
+
+            for (Object[] result : results) {
+                String direccion = (String) result[0];
+                Long numTaules = (Long) result[1];
+
+                System.out.println("Col·legi a " + direccion + " amb " + numTaules + " taules.");
+            }
+
+            em.getTransaction().commit();
+            em.close();
+            factory.close();
+
         }
     }
 }

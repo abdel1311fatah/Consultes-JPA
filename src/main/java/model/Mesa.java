@@ -2,12 +2,12 @@ package model;
 
 import jakarta.persistence.*;
 
-import java.io.Serializable;
 import java.util.Collection;
 
 @Entity
 @IdClass(MesaPK.class)
-public class Mesa implements Serializable {
+public class Mesa {
+
     @Id
     @Column(name = "colegio_idcolegio")
     private int colegioIdcolegio;
@@ -24,7 +24,7 @@ public class Mesa implements Serializable {
     @OneToMany(mappedBy = "mesa")
     private Collection<Componente> componentes;
     @ManyToOne
-    @JoinColumn(name = "colegio_idcolegio", referencedColumnName = "idcolegio", nullable = false)
+    @JoinColumn(name = "colegio_idcolegio", referencedColumnName = "idcolegio", nullable = false, insertable = false, updatable = false)
     private Colegio colegioByColegioIdcolegio;
     @OneToMany(mappedBy = "mesa")
     private Collection<Recuento> recuentos;

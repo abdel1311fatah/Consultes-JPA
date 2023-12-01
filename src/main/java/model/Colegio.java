@@ -6,7 +6,7 @@ import java.util.Collection;
 
 @Entity
 public class Colegio {
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+
     @Id
     @Column(name = "idcolegio")
     private int idcolegio;
